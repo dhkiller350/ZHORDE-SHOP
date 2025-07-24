@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>ZHORDE Shop</title>
+  <style>
+    body { background: #191941; color: #fff; font-family: Arial, sans-serif; }
+    #shop-container { margin: 60px auto; max-width: 600px; background: #222255; border-radius: 16px; padding: 40px; box-shadow: 0 6px 40px #000a; }
+    h1 { color: #ffd700; margin-bottom: 30px; }
+    .label { color: #aee8ff; }
+    .rank { color: #ffd700; font-weight: bold; }
+    #info { margin-bottom: 40px; }
+  </style>
+</head>
+<body>
+  <div id="shop-container">
+    <h1>ZHORDE Shop</h1>
+    <div id="info">
+      Coins: <span id="coins"></span><br>
+      Ranking: <span id="ranking"></span>
+    </div>
+  </div>
+  <script>
+    async function updateStatsFromAPI() {
+      // Change this path if you use a different repo/user or folder structure!
+      // Example: 'https://raw.githubusercontent.com/youruser/yourrepo/main/shop/player_stats.json'
+      const apiUrl = 'https://raw.githubusercontent.com/dhkiller350/yourrepo/main/shop/player_stats.json';
+
+      try {
+        const resp = await fetch(apiUrl + "?t=" + Date.now());
+        if (!resp.ok) throw new Error("Failed to fetch stats");
+        const data = await resp.json();
+        document.getElementById("coins").textContent = data.coins || "0";
+        let name = data.rankName || "";
+        let xp = data.rankXP;
+        let level = data.rankLevel;
+        let ranking = "Unranked";
+        if (name && name !== "null") {
+          ranking = name;
+          if (level && level !== "null" && level !== 0) ranking += " (Lv." + level + ")";
+          if (xp && xp !== "null" && xp !== 0) ranking += " | XP: " + xp;
+        }
+        document.getElementById("ranking").textContent = ranking;
+      } catch (e) {
+        document.getElementById("coins").textContent = "0";
+        document.getElementById("ranking").textContent = "Unranked";
+      }
+    }
+    updateStatsFromAPI();
+    setInterval(updateStatsFromAPI, 2000);
+  </script>
+</body>
+</html>
